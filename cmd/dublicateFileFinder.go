@@ -15,12 +15,12 @@ import (
 
 func readWorker(idx int, bufferSize int, file *os.File, hash hash.Hash) (string, error) {
 	if _, err := file.Seek(int64(idx)*int64(bufferSize), io.SeekStart); err != nil {
-		return "", fmt.Errorf("Error seeking to start byte: %e", err)
+		return "", fmt.Errorf("error seeking to start byte: %e", err)
 	}
 	buffer := make([]byte, bufferSize)
 	_, err := file.Read(buffer)
 	if err != nil && err != io.EOF {
-		return "", fmt.Errorf("Error reading file: %e", err)
+		return "", fmt.Errorf("error reading file: %e", err)
 	}
 	return string(hash.Sum(buffer[:bufferSize])), nil
 }
