@@ -40,22 +40,22 @@ func readFile(filePath string) (string, error) {
 	fileSize := fileInfo.Size()
 	numberOfIterations := int(math.Ceil(float64(fileSize) / float64(bufferSize)))
 	var hashChunks = make([]string, numberOfIterations)
-	var wg sync.WaitGroup
+	var readFileWG sync.WaitGroup
 	for i := 0; i < numberOfIterations; i++ {
-		wg.Add(1)
+		readFileWG.Add(1)
 		var errF error
-		go func() {
-			defer wg.Done()
-			hashChunks[i], err = readWorker(i, bufferSize, file, hash)
+		go func(idx int) {
+			defer readFileWG.Done()
+			hashChunks[idx], err = readWorker(idx, bufferSize, file, hash)
 			if err != nil {
 				errF = err
 			}
-		}()
+		}(i)
 		if errF != nil {
 			return "", errF
 		}
 	}
-	wg.Wait()
+	readFileWG.Wait()
 	fileHash := ""
 	for _, h := range hashChunks {
 		fileHash += h
